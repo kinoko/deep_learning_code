@@ -24,7 +24,7 @@ public class Adam implements Optimizer {
 
     @Override
     public Map<String, NdArray> update(Map<String, NdArray> param, Map<String, NdArray> grad) {
-        Map<String, NdArray> result = Maps.newHashMap();
+        Map<String, NdArray> result = Maps.newConcurrentMap();
         if (m == null) {
             m = Maps.newHashMap();
             v = Maps.newHashMap();
@@ -36,12 +36,21 @@ public class Adam implements Optimizer {
         iter++;
         double learningRateInT = learningRate * Math.sqrt(1 - Math.pow(beta2, iter)) / (1 - Math.pow(beta1, iter));
 
+        param.keySet().stream().parallel().forEach(key -> {
+                    m.put(key, m.get(key).mul(beta1).add(grad.get(key).mul(1 - beta1)));
+                    v.put(key, v.get(key).mul(beta2).add(grad.get(key).elementwise(i -> i * i).mul(1 - beta2)));
+
+                    result.put(
+                            key,
+                            param.get(key).sub(
+                                    m.get(key).div(v.get(key).elementwise(Math::sqrt).add(1e-8)).mul(learningRateInT)
+                            )
+                    );
+                }
+        );
+
         for (String key : param.keySet()) {
 
-            m.put(key, m.get(key).mul(beta1).add(grad.get(key).mul(1 - beta1)));
-            v.put(key, v.get(key).mul(beta2).add(grad.get(key).elementwise(i -> i * i).mul(1 - beta2)));
-
-            result.put(key, param.get(key).sub(m.get(key).div(v.get(key).elementwise(Math::sqrt).add(1e-8)).mul(learningRateInT)));
         }
         return result;
     }

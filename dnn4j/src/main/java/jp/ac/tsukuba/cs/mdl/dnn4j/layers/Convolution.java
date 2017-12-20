@@ -2,6 +2,9 @@ package jp.ac.tsukuba.cs.mdl.dnn4j.layers;
 
 import jp.ac.tsukuba.cs.mdl.dnn4j.Utils;
 import jp.ac.tsukuba.cs.mdl.numj.core.NdArray;
+import jp.ac.tsukuba.cs.mdl.numj.core.NumJ;
+
+import java.util.Arrays;
 
 /**
  * Created by yoshihiro on 17/07/15.
@@ -12,25 +15,40 @@ public class Convolution implements Layer {
 
     private NdArray bias;
 
+    private int filterHeight;
+
+    private int filterWidth;
+
     private int stride;
 
     private int padding;
 
+    private NdArray input;
+
     private int[] inputShape;
+
+    private int filterNum;
+
+    private NdArray col;
 
     private NdArray weightGrad;
 
     private NdArray biasGrad;
 
-    public Convolution(NdArray weight, NdArray bias, int stride, int padding) {
+
+    public Convolution(
+            NdArray weight,
+            NdArray bias,
+            int filterNum, int filterHeight, int filterWidth,
+            int stride, int padding
+    ) {
         this.weight = weight;
         this.bias = bias;
         this.stride = stride;
         this.padding = padding;
-    }
-
-    public Convolution(NdArray weight, NdArray bias) {
-        this(weight, bias, 1, 0);
+        this.filterNum = filterNum;
+        this.filterHeight = filterHeight;
+        this.filterWidth = filterWidth;
     }
 
     public void setWeight(NdArray weight) {
@@ -59,11 +77,33 @@ public class Convolution implements Layer {
 
     @Override
     public NdArray forward(NdArray input) {
-        return null;
+        inputShape = input.shape();
+        this.input = input;
+        int[] weightShape = weight.shape();
+        int outHeight = Utils.computeOutputSize(inputShape[2], weightShape[2], stride, padding);
+        int outWidth = Utils.computeOutputSize(inputShape[3], weightShape[3], stride, padding);
+
+        col = Utils.im2col(input, filterHeight, filterWidth, stride, padding);
+
+        // ここから変更 重み行列を掛ける
+        NdArray out = NumJ.zeros(0);
+        // ここまで変更
+
+        out = out.reshape(inputShape[0], outHeight, outWidth, filterNum).transpose(0, 3, 1, 2);
+
+        return out;
     }
 
     @Override
     public NdArray backward(NdArray dout) {
-        return null;
+        int[] weightShape = weight.shape();
+        dout = dout.transpose(0, 2, 3, 1).reshape(dout.size() / filterNum, filterNum);
+
+        // ここから実装 重みトバイアス、入力のの勾配を計算し、weightGrad、biasGrad、dcolに出力する
+        // このの操作はFCとほぼ同じ
+        NdArray dcol = NumJ.zeros(0);
+        // ここまで実装
+
+        return Utils.col2im(dcol, inputShape, filterHeight, filterWidth, stride, padding);
     }
 }

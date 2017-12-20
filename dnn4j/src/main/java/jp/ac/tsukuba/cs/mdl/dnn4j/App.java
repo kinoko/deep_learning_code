@@ -21,7 +21,7 @@ public class App {
         /*
         データの準備
          */
-        Dataset dataset = new Cifar10Dataset();
+        Dataset dataset = new MnistDataset();
         int[] inputShape = new int[]{
                 dataset.getChannelSize(), dataset.getHeight(), dataset.getWidth()
         };
@@ -125,6 +125,7 @@ public class App {
                         .put(NetArgType.LAYER_TYPE, LayerType.SIGMOID)
                         .build()
         );
+
 
         netArgList.add(
                 new MapBuilder<String, Integer>()

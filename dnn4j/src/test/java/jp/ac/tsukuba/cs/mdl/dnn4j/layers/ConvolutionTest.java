@@ -12,7 +12,9 @@ public class ConvolutionTest {
 
     @Before
     public void init() {
-        conv = new Convolution(NumJ.arange(9, 1, 3, 3), NumJ.arange(1, 9), 1, 0);
+        conv = new Convolution(
+                NumJ.arange(9, 1 * 3 * 3),
+                NumJ.arange(1, 9), 9, 3, 3, 1, 0);
     }
 
 //    @Test
@@ -216,9 +218,9 @@ public class ConvolutionTest {
                 48656., 50056., 51456.,
                 54256., 55656., 57056.,
                 59856., 61256., 62656.
-        }, 9, 1, 3, 3).sub(conv.getWeightGrad()).elementwise(Math::abs).sum() < 1e-10);
+        }, 9, 1 * 3 * 3).sub(conv.getWeightGrad()).elementwise(Math::abs).sum() < 1e-10);
 
-        Assert.assertArrayEquals(new int[]{9, 1, 3, 3}, conv.getWeightGrad().shape());
+        Assert.assertArrayEquals(new int[]{9, 1 * 3 * 3}, conv.getWeightGrad().shape());
 
         Assert.assertTrue(NumJ.create(new double[]{
                 888, 952, 1016, 1080, 1144, 1208, 1272, 1336, 1400

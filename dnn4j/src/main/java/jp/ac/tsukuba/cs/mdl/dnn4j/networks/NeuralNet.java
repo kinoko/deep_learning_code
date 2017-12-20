@@ -266,11 +266,12 @@ public class NeuralNet implements Net {
                         0, // average
                         1, // std
                         filerNum,
-                        inputFilterNum,
-                        filterSize,
-                        filterSize
+                        inputFilterNum * filterSize * filterSize
                 ).mul(scale),
                 NumJ.zeros(1, filerNum),
+                filerNum,
+                filterSize,
+                filterSize,
                 netArgument.get(NetArgType.STRIDE),
                 netArgument.get(NetArgType.PADDING)
         );

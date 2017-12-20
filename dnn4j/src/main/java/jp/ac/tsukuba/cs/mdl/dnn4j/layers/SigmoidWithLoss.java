@@ -42,7 +42,7 @@ public class SigmoidWithLoss implements LastLayer {
 
         for (int i = 0; i < t.size(); i++) {
             int tt = (int) t.get(new int[]{0, i});
-            double yy = y.get(new int[]{i, tt});
+            double yy = y.get(i, tt);
 
             res += Math.log(yy);
         }
