@@ -80,8 +80,8 @@ public class Convolution implements Layer {
         inputShape = input.shape();
         this.input = input;
         int[] weightShape = weight.shape();
-        int outHeight = Utils.computeOutputSize(inputShape[2], weightShape[2], stride, padding);
-        int outWidth = Utils.computeOutputSize(inputShape[3], weightShape[3], stride, padding);
+        int outHeight = Utils.computeOutputSize(inputShape[2], filterHeight, stride, padding);
+        int outWidth = Utils.computeOutputSize(inputShape[3], filterWidth, stride, padding);
 
         col = Utils.im2col(input, filterHeight, filterWidth, stride, padding);
 

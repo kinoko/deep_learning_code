@@ -72,7 +72,7 @@ gradle-app.setting
 .mtj.tmp/
 
 # Package Files #
-*.jar
+# *.jar
 *.war
 *.ear
 *.zip
